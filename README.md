@@ -37,23 +37,25 @@ cp digital-factory-data/karaf/etc/org.jahia.modules.htmlfiltering.global.default
 In the copy, add the following entries in **both** `editWorkspace` and `liveWorkspace`, inside `allowedRuleSet.elements`, just before the `protocols` key:
 
 ```yaml
-      # script tags
+      # Allows the <script> tag and its inline text content
       - tags:
         - "script"
+      # Allows the src attribute, validated against the LINKS_URL pattern
       - format: "LINKS_URL"
         attributes:
         - "src"
         tags:
         - "script"
+      # Allows standard <script> attributes
       - attributes:
-        - "type"
-        - "async"
-        - "defer"
-        - "charset"
-        - "crossorigin"
-        - "integrity"
+        - "type"         # e.g. text/javascript
+        - "async"        # asynchronous loading
+        - "defer"        # deferred execution
+        - "charset"      # e.g. utf-8 (used by HubSpot)
+        - "crossorigin"  # CORS
+        - "integrity"    # SRI hash
         - "referrerpolicy"
-        - "nomodule"
+        - "nomodule"     # fallback for browsers without ESM support
         tags:
         - "script"
       protocols:   # <-- already present, insert above this line
