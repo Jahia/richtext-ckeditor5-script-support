@@ -76,21 +76,30 @@ Use `includeSites` / `excludeSites` to scope activation to specific sites.
 
 ## How it works
 
+The problem comes from two independent places. Even if you get past the CKEditor layer, the script is stripped on save by the server. Both must be addressed.
+
 ### Client-side
 
-CKEditor 5 blocks `<script>` at two levels. First, `DomConverter` refuses to render script elements in the live editing DOM. Second, and more subtly, `domToView` (used during data load) does not expose the text content of `<script>` elements as child nodes in the view — so the standard upcast API sees an empty element regardless of the script body.
+CKEditor 5 blocks `<script>` at two levels:
 
-To work around this, the `ScriptElement` plugin wraps the data processor's `toView` method. Before CKEditor parses the HTML, any inline script body is base64-encoded into a temporary `data-cks-body` attribute. This turns content that CKEditor cannot see into an attribute it can.
+1. `DomConverter` refuses to render script elements in the live editing DOM.
+2. More subtly, `domToView` (used when loading data into the editor) does not expose the text content of `<script>` elements as child nodes in the view. The standard upcast API sees an empty element regardless of the script body — so even with `htmlSupport.allow` configured, the inline content is silently lost.
+
+To work around this, the `ScriptElement` plugin wraps the data processor's `toView` method. Before CKEditor parses the HTML, any inline script body is base64-encoded into a temporary `data-cks-body` attribute, turning content CKEditor cannot see into an attribute it can carry through its pipeline.
 
 The plugin then defines:
 
-- **Upcast**: reads and decodes `data-cks-body`, stores the result in the `scriptPreserved` model element's `scriptContent` attribute. The model element is named `scriptPreserved` (not `htmlScript`) to avoid collision with `GeneralHtmlSupport`, which auto-generates model names using the `html` + PascalCase convention.
-- **Editing downcast**: renders a styled `<div>` placeholder — a real `<script>` is never put into the editing DOM.
+- **Upcast**: reads and decodes `data-cks-body`, stores the result in the `scriptPreserved` model element's `scriptContent` attribute. The model element is named `scriptPreserved` (not `htmlScript`) to avoid collision with `GeneralHtmlSupport`, which auto-generates model names as `html` + PascalCase.
+- **Editing downcast**: renders a styled placeholder `<div>` with a purple background — a real `<script>` is never put into the editing DOM.
 - **Data downcast**: restores the original `<script>` tag and its body using `createRawElement`, which is processed before DomConverter's security check and therefore goes through unblocked.
 
 ### Server-side
 
-The `html-filtering` module uses OWASP Java HTML Sanitizer as a JCR interceptor: every richtext property is sanitized before being stored. Since `<script>` is not in the default allowlist, it must be added explicitly to the custom configuration as described above.
+The `html-filtering` module runs OWASP Java HTML Sanitizer as a JCR interceptor: every richtext property is sanitized before being stored. Since `<script>` is not in the default allowlist, it is stripped on save even if CKEditor outputs it correctly. It must be added explicitly to the custom configuration as described in the installation steps.
+
+### Why a separate module?
+
+This behaviour could also have been implemented by modifying `richtext-ckeditor5` directly. A separate module was chosen to keep the core untouched and avoid complicating future upgrades.
 
 ## Dependencies
 
