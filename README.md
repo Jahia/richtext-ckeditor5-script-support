@@ -87,7 +87,7 @@ The `allow-script-in-richtext` permission is defined by this module in `src/main
 
 It is grouped under **Unsecure permissions** because embedding executable scripts in live content is a sensitive capability that should be granted deliberately.
 
-This module ships a ready-to-use edit role `allow-script-in-richtext` (defined in `src/main/import/roles.xml`). It contains only the `allow-script-in-richtext` permission and is standalone — assign it on top of a user's existing editor role.
+This module ships a ready-to-use edit role `allow-script-in-richtext` (defined in `src/main/import/roles.xml`). It is a sub-role of `editor` and contains the `allow-script-in-richtext` permission. Assign it on top of a user's existing editor role.
 
 To grant it site-wide:
 

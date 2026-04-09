@@ -4,8 +4,10 @@
        xmlns:j="http://www.jahia.org/jahia/1.0"
        xmlns:jnt="http://www.jahia.org/jahia/nt/1.0">
 
-    <allow-script-in-richtext jcr:primaryType="jnt:role"
-                                   j:permissionNames="allow-script-in-richtext"
-                                   j:privilegedAccess="true"/>
+    <editor jcr:primaryType="jnt:role">
+        <allow-script-in-richtext jcr:primaryType="jnt:role"
+                                  j:permissionNames="allow-script-in-richtext"
+                                  j:privilegedAccess="true"/>
+    </editor>
 
 </roles>
