@@ -33,7 +33,7 @@ window.jahia.uiExtender.registry.add('callback', 'richtext-ckeditor5-script-supp
 
             // Create 'complete-with-scripts' from the original complete config (before the
             // disallow patch above) so that <script> is explicitly allowed for users who
-            // hold the richtext-embed-scripts permission.
+            // hold the allow-script-in-richtext permission.
             // ScriptElementSupport (built into GeneralHtmlSupport) handles the actual
             // preservation: registerRawContentMatcher stores the raw body as $rawContent,
             // the upcast reads it into the htmlScript model element, and the data downcast

@@ -3,6 +3,6 @@
              xmlns:jcr="http://www.jcp.org/jcr/1.0"
              jcr:primaryType="jnt:permission">
     <unsecure-permissions jcr:primaryType="jnt:permission">
-        <richtext-embed-scripts jcr:primaryType="jnt:permission"/>
+        <allow-script-in-richtext jcr:primaryType="jnt:permission"/>
     </unsecure-permissions>
 </permissions>

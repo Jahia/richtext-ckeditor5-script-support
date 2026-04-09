@@ -2,7 +2,7 @@
 
 A Jahia `system` module that adds a `complete-with-scripts` CKEditor 5 config, enabling `<script>` tags in richtext fields. Useful for embedding third-party scripts — HubSpot forms, analytics snippets, tag managers, etc.
 
-The feature is permission-gated: only users with the `richtext-embed-scripts` permission can insert scripts in the editor. Everyone else gets the standard `complete` config with script support disabled.
+The feature is permission-gated: only users with the `allow-script-in-richtext` permission can insert scripts in the editor. Everyone else gets the standard `complete` config with script support disabled.
 
 ## The problem
 
@@ -69,20 +69,20 @@ In `digital-factory-data/karaf/etc/org.jahia.modules.richtextCKEditor5.yaml`:
 ```yaml
 configs:
   - name: complete-with-scripts
-    permission: richtext-embed-scripts
+    permission: allow-script-in-richtext
   - name: complete
 ```
 
-Jahia evaluates configs in order and picks the first one the current user is permitted to use. Users with `richtext-embed-scripts` get `complete-with-scripts`; everyone else gets `complete`.
+Jahia evaluates configs in order and picks the first one the current user is permitted to use. Users with `allow-script-in-richtext` get `complete-with-scripts`; everyone else gets `complete`.
 
 The `permission` field is optional — omit it to give `complete-with-scripts` to all users. `siteKeys` can restrict activation to specific sites.
 
 ### 4. Create a role and grant the permission
 
-The `richtext-embed-scripts` permission is defined by this module in `src/main/import/permissions.xml`. After deployment it is available in JCR under:
+The `allow-script-in-richtext` permission is defined by this module in `src/main/import/permissions.xml`. After deployment it is available in JCR under:
 
 ```
-/modules/richtext-ckeditor5-script-support/<version>/permissions/unsecure-permissions/richtext-embed-scripts
+/modules/richtext-ckeditor5-script-support/<version>/permissions/unsecure-permissions/allow-script-in-richtext
 ```
 
 It is grouped under **Unsecure permissions** because embedding executable scripts in live content is a sensitive capability that should be granted deliberately.
@@ -92,7 +92,7 @@ To create a dedicated role:
 1. Go to **Jahia Administration → Users and Roles → Roles and permissions**
 2. Under **Edit roles**, click **+** and name the role (e.g. `Can add scripts in richtext`)
 3. Open the role, go to the **Permissions** tab, click **Other permissions**
-4. Expand **Unsecure permissions** and enable **richtext-embed-scripts**
+4. Expand **Unsecure permissions** and enable **allow-script-in-richtext**
 5. Save
 
 Then grant this role to the users or groups who should be allowed to embed scripts.
