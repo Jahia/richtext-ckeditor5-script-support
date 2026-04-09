@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -11,7 +14,7 @@
     <groupId>com.jahia.modules</groupId>
     <artifactId>richtext-ckeditor5-script-support</artifactId>
     <name>RichText CKEditor5 Script Support</name>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <description>Registers a CKEditor 5 "complete-with-scripts" configuration that preserves &lt;script&gt; tags in richtext fields.</description>
 
@@ -47,5 +50,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
