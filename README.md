@@ -4,6 +4,8 @@ A Jahia `system` module that adds a `complete-with-scripts` CKEditor 5 config, e
 
 The feature is permission-gated: only users with the `allow-script-in-richtext` permission can insert scripts in the editor. Everyone else gets the standard `complete` config with script support disabled.
 
+> **Note:** [Scripts are blocked by default in CKEditor 5 for security reasons.](https://ckeditor.com/docs/ckeditor5/latest/features/html/general-html-support.html#enabling-script-tags-for-legacy-use-cases) For new implementations, we discourage embedding scripts in editor content.
+
 ## The problem
 
 `<script>` tags are stripped at two independent layers, both of which must be addressed:
