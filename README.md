@@ -70,7 +70,7 @@ In `digital-factory-data/karaf/etc/org.jahia.modules.richtextCKEditor5.yaml`:
 ```yaml
 configs:
   - name: completeWithScripts
-    permission: canAddScriptInRichText
+    permission: richtext-embed-scripts
   - name: complete
 ```
 

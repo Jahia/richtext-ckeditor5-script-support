@@ -3,6 +3,6 @@
              xmlns:jcr="http://www.jcp.org/jcr/1.0"
              jcr:primaryType="jnt:permission">
     <wysiwyg-editor-toolbar jcr:primaryType="jnt:permission">
-        <canAddScriptInRichText jcr:primaryType="jnt:permission"/>
+        <richtext-embed-scripts jcr:primaryType="jnt:permission"/>
     </wysiwyg-editor-toolbar>
 </permissions>
