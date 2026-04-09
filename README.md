@@ -87,24 +87,16 @@ The `allow-script-in-richtext` permission is defined by this module in `src/main
 
 It is grouped under **Unsecure permissions** because embedding executable scripts in live content is a sensitive capability that should be granted deliberately.
 
-To create a dedicated role:
+This module ships a ready-to-use edit role `can-embed-scripts-in-richtext` (defined in `src/main/import/roles.xml`). It contains only the `allow-script-in-richtext` permission and is standalone — assign it on top of a user's existing editor role.
 
-1. Go to **Jahia Administration → Users and Roles → Roles and permissions**
-2. Under **Edit roles**, click **+** and name the role (e.g. `Can add scripts in richtext`)
-3. Open the role, go to the **Permissions** tab, click **Other permissions**
-4. Expand **Unsecure permissions** and enable **allow-script-in-richtext**
-5. Save
-
-Then grant this role to the users or groups who should be allowed to embed scripts.
-
-Edit roles are granted on content nodes and inherited by all sub-nodes. To grant site-wide access:
+To grant it site-wide:
 
 1. In **jContent**, open the site root node
-2. Open the node engine (edit dialog) and go to the **Edit roles** tab
-3. Click **+**, select the user or group (e.g. the editors group), and assign the role created above
-4. Save — the role is inherited by all pages and content nodes under the site root, and members of that group will receive the `complete-with-scripts` config in the editor
+2. Open the node engine and go to the **Edit roles** tab
+3. Click **+**, select the user or group, and assign `can-embed-scripts-in-richtext`
+4. Save — the role is inherited by all sub-nodes, and members of that group will receive the `complete-with-scripts` config in the editor
 
-To restrict the permission to a specific section of the site, grant the role on that section's root node instead of the site root.
+To restrict the permission to a specific section, grant the role on that section's root node instead of the site root.
 
 ## How it works
 
