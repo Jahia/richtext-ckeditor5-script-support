@@ -1,17 +1,15 @@
-# RichText CKEditor5 Script Support
+# richtext-ckeditor5-script-support
 
-A Jahia `system` module that enables `<script>` tags in CKEditor 5 richtext fields. Useful for embedding third-party scripts (HubSpot forms, analytics snippets, etc.) directly in richtext content.
+A Jahia `system` module that adds a `complete-with-scripts` CKEditor 5 config, enabling `<script>` tags in richtext fields. Useful for embedding third-party scripts — HubSpot forms, analytics snippets, tag managers, etc.
 
-## Overview
+## The problem
 
-By default, `<script>` tags are stripped at two independent layers:
+`<script>` tags are stripped at two independent layers, both of which must be fixed:
 
-| Layer | Problem | Fix |
+| Layer | What strips it | Fix |
 |---|---|---|
-| CKEditor 5 (client-side) | `DomConverter` blocks `<script>` in the editing DOM; `domToView` does not expose inline script bodies as view children | Activate `ScriptElementSupport` (built into `GeneralHtmlSupport`) via `htmlSupport.allow` |
-| Jahia `html-filtering` (server-side) | OWASP sanitizer strips `<script>` on save | Add `script` to the allowlist YAML |
-
-Both layers must be configured for scripts to survive end-to-end.
+| CKEditor 5 | `DomConverter` replaces `<script>` with a `<span>` in the editing DOM; `domToView` does not expose inline script bodies as view children | Add `script` to `htmlSupport.allow` to activate the built-in `ScriptElementSupport` |
+| Jahia `html-filtering` | OWASP Java HTML Sanitizer strips `<script>` before the value is stored in JCR | Add `script` to the allowlist YAML |
 
 ## Installation
 
@@ -21,41 +19,38 @@ Both layers must be configured for scripts to survive end-to-end.
 mvn clean package
 ```
 
-In Jahia, go to **Administration → Modules & Extensions → Modules**, then upload `target/richtext-ckeditor5-script-support-*.jar`.
+Go to **Jahia Administration → Modules & Extensions → Modules** and upload `target/richtext-ckeditor5-script-support-*.jar`.
 
-Since this is a `system` module, it is active on all sites automatically — no per-site activation needed.
+This is a `system` module — it is active on all sites automatically, no per-site activation needed.
 
-### 2. Configure html-filtering
+### 2. Allow `<script>` in html-filtering
 
-`org.jahia.modules.htmlfiltering.global.custom.yml` does not exist by default and **fully replaces** the default (no merge). Start by copying the default:
+`org.jahia.modules.htmlfiltering.global.custom.yml` does not exist by default and **fully replaces** the built-in default (no merge). Start from a copy of the default:
 
 ```bash
 cp digital-factory-data/karaf/etc/org.jahia.modules.htmlfiltering.global.default.yml \
    digital-factory-data/karaf/etc/org.jahia.modules.htmlfiltering.global.custom.yml
 ```
 
-In the copy, add the following entries in **both** `editWorkspace` and `liveWorkspace`, inside `allowedRuleSet.elements`, just before the `protocols` key:
+In the copy, add the following entries in **both** `editWorkspace` and `liveWorkspace`, inside `allowedRuleSet.elements`, immediately before the `protocols` key:
 
 ```yaml
-      # Allows the <script> tag and its inline text content
       - tags:
         - "script"
-      # Allows the src attribute, validated against the LINKS_URL pattern
       - format: "LINKS_URL"
         attributes:
         - "src"
         tags:
         - "script"
-      # Allows standard <script> attributes
       - attributes:
-        - "type"         # e.g. text/javascript
-        - "async"        # asynchronous loading
-        - "defer"        # deferred execution
-        - "charset"      # e.g. utf-8 (used by HubSpot)
-        - "crossorigin"  # CORS
-        - "integrity"    # SRI hash
+        - "type"
+        - "async"
+        - "defer"
+        - "charset"
+        - "crossorigin"
+        - "integrity"
         - "referrerpolicy"
-        - "nomodule"     # fallback for browsers without ESM support
+        - "nomodule"
         tags:
         - "script"
       protocols:   # <-- already present, insert above this line
@@ -63,7 +58,7 @@ In the copy, add the following entries in **both** `editWorkspace` and `liveWork
 
 Felix FileInstall picks up the change automatically — no restart needed.
 
-### 3. Activate the CKEditor config
+### 3. Activate the `complete-with-scripts` config
 
 In `digital-factory-data/karaf/etc/org.jahia.modules.richtextCKEditor5.yaml`:
 
@@ -74,36 +69,40 @@ configs:
   - name: complete
 ```
 
-The `permission` field is optional. When set, Jahia selects `complete-with-scripts` only for users who hold that permission on the edited node — all others fall back to `complete`. Omit `permission` to activate `complete-with-scripts` for everyone.
+Jahia evaluates configs in order and picks the first one the current user is permitted to use. Users with the `richtext-embed-scripts` permission get `complete-with-scripts`; everyone else gets `complete`.
 
-Use `siteKeys` to scope activation to specific sites.
+The `permission` field is optional — omit it to give `complete-with-scripts` to all users. Use `siteKeys` to restrict activation to specific sites.
+
+### 4. Grant the permission
+
+The `richtext-embed-scripts` permission is registered by this module (see `src/main/import/permissions.xml`). It sits under the `wysiwyg-editor-toolbar` group alongside the standard `view-full-wysiwyg-editor`, `view-basic-wysiwyg-editor`, and `view-light-wysiwyg-editor` permissions.
+
+Assign it to the appropriate role in **Jahia Administration → Users and Roles**.
 
 ## How it works
 
-The problem comes from two independent places. Even if you get past the CKEditor layer, the script is stripped on save by the server. Both must be addressed.
+### Client-side — CKEditor 5
 
-### Client-side
+CKEditor 5 blocks `<script>` at two levels inside `DomConverter`:
 
-CKEditor 5 blocks `<script>` at two levels:
+1. **Editing DOM** — script elements are replaced by `<span data-ck-unsafe-element="script">` to prevent accidental execution while editing.
+2. **Data loading** — `domToView` does not expose the text content of `<script>` elements as child nodes, so the inline body is invisible to the standard upcast API.
 
-1. `DomConverter` refuses to render script elements in the live editing DOM — they are replaced by `<span data-ck-unsafe-element="script">`.
-2. `domToView` (used when loading data into the editor) does not expose the text content of `<script>` elements as child nodes in the view — so the inline body is invisible to the standard upcast API.
+Both are handled by `ScriptElementSupport`, a plugin that ships inside `GeneralHtmlSupport` (which is already part of the `complete` config). Adding `{ name: 'script' }` to `htmlSupport.allow` activates it:
 
-Both problems are already solved by `ScriptElementSupport`, a plugin that ships inside `GeneralHtmlSupport` (included in the `complete` config). It is activated by adding `script` to `htmlSupport.allow`:
+- `registerRawContentMatcher({ name: 'script' })` instructs `DomConverter` to store the raw script body as a `$rawContent` custom property on the view element, rather than attempting to process it as child nodes.
+- The **upcast** reads `$rawContent` and stores it in the `htmlScript` model element's `htmlContent` attribute.
+- The **data downcast** restores the original `<script>` tag and its body via `createRawElement`, which bypasses `DomConverter`'s security check and outputs the tag unmodified.
 
-- **Data loading**: `registerRawContentMatcher({ name: 'script' })` tells `DomConverter` to store the raw `innerHTML` of `<script>` as a custom property (`$rawContent`) instead of processing it as child nodes.
-- **Upcast**: reads `$rawContent`, stores it in the `htmlScript` model element's `htmlContent` attribute.
-- **Data downcast**: restores the original `<script>` tag and its body using `createRawElement`, which is processed before `DomConverter`'s security check and therefore goes through unblocked.
+### Server-side — Jahia html-filtering
 
-### Server-side
-
-The `html-filtering` module runs OWASP Java HTML Sanitizer as a JCR interceptor: every richtext property is sanitized before being stored. Since `<script>` is not in the default allowlist, it is stripped on save even if CKEditor outputs it correctly. It must be added explicitly to the custom configuration as described in the installation steps.
+The `html-filtering` module runs OWASP Java HTML Sanitizer as a JCR interceptor: every richtext property is sanitized before being stored. Since `<script>` is not in the default allowlist, it is stripped on save regardless of what CKEditor outputs. It must be explicitly added to the custom YAML as described above.
 
 ### Why a separate module?
 
-This behaviour could also have been implemented by modifying `richtext-ckeditor5` directly. A separate module was chosen to keep the core untouched and avoid complicating future upgrades.
+Script support could have been added directly to `richtext-ckeditor5`. A separate module was chosen to keep the core untouched, make the feature opt-in, and avoid complicating future upgrades.
 
 ## Dependencies
 
-- `richtext-ckeditor5` — provides the `complete` CKEditor config (which includes `GeneralHtmlSupport` and its `ScriptElementSupport`)
+- `richtext-ckeditor5` — provides the `complete` config, which includes `GeneralHtmlSupport` and its built-in `ScriptElementSupport`
 - `html-filtering` — must be configured as described in step 2

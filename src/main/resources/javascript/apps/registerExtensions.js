@@ -10,14 +10,21 @@ window.jahia.uiExtender.registry.add('callback', 'richtext-ckeditor5-script-supp
                 return;
             }
 
-            // Prevent double registration if callback fires more than once
+            // Skip if already registered — either this callback fired twice,
+            // or a future version of richtext-ckeditor5 ships this config natively.
             if (registry.get('ckeditor5-config', 'complete-with-scripts')) {
                 return;
             }
 
-            // GeneralHtmlSupport (already loaded in 'complete') ships with ScriptElementSupport,
-            // which handles <script> preservation via registerRawContentMatcher + $rawContent.
-            // Adding 'script' to htmlSupport.allow activates that built-in support.
+            // ScriptElementSupport is a plugin that ships inside GeneralHtmlSupport,
+            // which is already loaded as part of the 'complete' config.
+            // Adding 'script' to htmlSupport.allow activates it: the plugin calls
+            // registerRawContentMatcher({ name: 'script' }) so that DomConverter stores
+            // the raw script body as a '$rawContent' custom property instead of trying
+            // to process it as child nodes (which would yield nothing). The upcast then
+            // reads that property into the 'htmlScript' model element, and the data
+            // downcast restores the original <script> tag via createRawElement, bypassing
+            // DomConverter's security check.
             var existingAllow = (complete.htmlSupport && complete.htmlSupport.allow) || [];
 
             registry.add('ckeditor5-config', 'complete-with-scripts', Object.assign({}, complete, {
