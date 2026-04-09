@@ -95,13 +95,16 @@ To create a dedicated role:
 4. Expand **Unsecure permissions** and enable **richtext-embed-scripts**
 5. Save
 
-Then assign this role to the users or groups who should be allowed to embed scripts:
+Then grant this role to the users or groups who should be allowed to embed scripts.
 
-1. Go to **Jahia Administration → Users and Roles → Users** (or **Groups**)
-2. Select the user or group (e.g. the editors group)
-3. Go to the **Roles** tab
-4. Click **+**, select the site scope, and assign the role created above
-5. Save — members of that group now inherit the role and will receive the `complete-with-scripts` config in the editor
+Edit roles are granted on content nodes and inherited by all sub-nodes. To grant site-wide access:
+
+1. In **jContent**, open the site root node
+2. Open the node engine (edit dialog) and go to the **Edit roles** tab
+3. Click **+**, select the user or group (e.g. the editors group), and assign the role created above
+4. Save — the role is inherited by all pages and content nodes under the site root, and members of that group will receive the `complete-with-scripts` config in the editor
+
+To restrict the permission to a specific section of the site, grant the role on that section's root node instead of the site root.
 
 ## How it works
 
