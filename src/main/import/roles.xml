@@ -7,7 +7,16 @@
     <editor jcr:primaryType="jnt:role">
         <allow-script-in-richtext jcr:primaryType="jnt:role"
                                   j:permissionNames="allow-script-in-richtext"
-                                  j:privilegedAccess="true"/>
+                                  j:privilegedAccess="true">
+            <j:translation_en jcr:description="Users with this role can insert script tags in the richtext editor"
+                              jcr:language="en"
+                              jcr:primaryType="jnt:translation"
+                              jcr:title="Allow to embed scripts in RichText"/>
+            <j:translation_fr jcr:description="Les utilisateurs avec ce rôle peuvent insérer des balises script dans l'éditeur richtext"
+                              jcr:language="fr"
+                              jcr:primaryType="jnt:translation"
+                              jcr:title="Autoriser l'intégration de scripts dans le RichText"/>
+        </allow-script-in-richtext>
     </editor>
 
 </roles>
