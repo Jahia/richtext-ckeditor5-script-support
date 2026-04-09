@@ -81,7 +81,7 @@ The `permission` field is optional — omit it to give `complete-with-scripts` t
 
 This module ships the site role `allow-script-in-richtext` (`j:roleGroup=site-role`, scoped to `jnt:virtualsite`), with English and French translations — it appears as **"Allow to embed scripts in RichText"** in the Jahia admin. Assign it to the users or groups who should be allowed to embed scripts — they will automatically receive the `complete-with-scripts` config in the editor.
 
-To grant the role site-wide in Jahia 8.2, go to **Administration → [your site] → Settings → Roles** and assign `allow-script-in-richtext` to the user or group.
+To grant the role site-wide in Jahia 8.2, go to **Administration → [your site] → Site roles** and assign `allow-script-in-richtext` to the user or group.
 
 > The URL pattern is `http://<host>/jahia/administration/<siteKey>/settings/roles`.
 
