@@ -87,13 +87,13 @@ The `allow-script-in-richtext` permission is defined by this module in `src/main
 
 It is grouped under **Unsecure permissions** because embedding executable scripts in live content is a sensitive capability that should be granted deliberately.
 
-This module ships a ready-to-use edit role `can-embed-scripts-in-richtext` (defined in `src/main/import/roles.xml`). It contains only the `allow-script-in-richtext` permission and is standalone — assign it on top of a user's existing editor role.
+This module ships a ready-to-use edit role `allow-script-in-richtext` (defined in `src/main/import/roles.xml`). It contains only the `allow-script-in-richtext` permission and is standalone — assign it on top of a user's existing editor role.
 
 To grant it site-wide:
 
 1. In **jContent**, open the site root node
 2. Open the node engine and go to the **Edit roles** tab
-3. Click **+**, select the user or group, and assign `can-embed-scripts-in-richtext`
+3. Click **+**, select the user or group, and assign `allow-script-in-richtext`
 4. Save — the role is inherited by all sub-nodes, and members of that group will receive the `complete-with-scripts` config in the editor
 
 To restrict the permission to a specific section, grant the role on that section's root node instead of the site root.
