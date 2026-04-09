@@ -81,7 +81,9 @@ The `permission` field is optional — omit it to give `complete-with-scripts` t
 
 This module ships the edit role `allow-script-in-richtext` (a sub-role of `editor`), with English and French translations — it appears as **"Allow to embed scripts in RichText"** in the Jahia admin. Assign it to the users or groups who should be allowed to embed scripts — they will automatically receive the `complete-with-scripts` config in the editor.
 
-Edit roles are granted on content nodes and inherited by all sub-nodes. To grant it on the site root (site-wide effect), open the site root node in **jContent**, go to the **Edit roles** tab, and assign `allow-script-in-richtext` to the user or group.
+To grant the role site-wide in Jahia 8.2, go to **Administration → [your site] → Settings → Properties**, click **Edit site properties**, switch to **Advanced Mode**, open **Advanced options**, then **Edit roles**, and add the user or group to `allow-script-in-richtext`.
+
+> The URL pattern is `http://<host>/jahia/administration/<siteKey>/settings/properties`.
 
 ## How it works
 
@@ -107,7 +109,7 @@ Both are solved by [`ScriptElementSupport`](https://github.com/ckeditor/ckeditor
 
 - **[`registerRawContentMatcher({ name: 'script' })`](https://github.com/ckeditor/ckeditor5/blob/master/packages/ckeditor5-engine/src/view/domconverter.ts#L1295)** — instructs `DomConverter` to store the raw script body as a `$rawContent` custom property on the view element instead of trying to process it as child nodes (which yields nothing).
 - **Upcast** — reads `$rawContent` and stores it in the `htmlScript` model element's `htmlContent` attribute.
-- **Data downcast** — restores the original `<script>` tag and body via `createRawElement`, which is rendered before `DomConverter`'s security check and therefore bypasses it.
+- **Data downcast** — restores the original `<script>` tag and body via `createRawElement`, a special view element whose content is serialized as raw HTML, short-circuiting the standard view-to-DOM conversion pipeline.
 
 ### Server-side — Jahia html-filtering
 

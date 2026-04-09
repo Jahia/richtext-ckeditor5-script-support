@@ -37,8 +37,8 @@ window.jahia.uiExtender.registry.add('callback', 'richtext-ckeditor5-script-supp
             // ScriptElementSupport (built into GeneralHtmlSupport) handles the actual
             // preservation: registerRawContentMatcher stores the raw body as $rawContent,
             // the upcast reads it into the htmlScript model element, and the data downcast
-            // restores the <script> tag via createRawElement, bypassing DomConverter's
-            // security check.
+            // restores the <script> tag via createRawElement (raw HTML output, bypassing
+            // the standard view-to-DOM conversion pipeline).
             registry.add('ckeditor5-config', 'complete-with-scripts', Object.assign({}, complete, {
                 htmlSupport: Object.assign({}, complete.htmlSupport || {}, {
                     allow: existingAllow.concat([
