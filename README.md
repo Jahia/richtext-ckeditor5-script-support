@@ -77,26 +77,11 @@ Jahia evaluates configs in order and picks the first one the current user is per
 
 The `permission` field is optional — omit it to give `complete-with-scripts` to all users. `siteKeys` can restrict activation to specific sites.
 
-### 4. Create a role and grant the permission
+### 4. Grant the role to users or groups
 
-The `allow-script-in-richtext` permission is defined by this module in `src/main/import/permissions.xml`. After deployment it is available in JCR under:
+This module ships the edit role `allow-script-in-richtext` (a sub-role of `editor`). Assign it to the users or groups who should be allowed to embed scripts — they will automatically receive the `complete-with-scripts` config in the editor.
 
-```
-/modules/richtext-ckeditor5-script-support/<version>/permissions/unsecure-permissions/allow-script-in-richtext
-```
-
-It is grouped under **Unsecure permissions** because embedding executable scripts in live content is a sensitive capability that should be granted deliberately.
-
-This module ships a ready-to-use edit role `allow-script-in-richtext` (defined in `src/main/import/roles.xml`). It is a sub-role of `editor` and contains the `allow-script-in-richtext` permission. Assign it on top of a user's existing editor role.
-
-To grant it site-wide:
-
-1. In **jContent**, open the site root node
-2. Open the node engine and go to the **Edit roles** tab
-3. Click **+**, select the user or group, and assign `allow-script-in-richtext`
-4. Save — the role is inherited by all sub-nodes, and members of that group will receive the `complete-with-scripts` config in the editor
-
-To restrict the permission to a specific section, grant the role on that section's root node instead of the site root.
+Edit roles are granted on content nodes and inherited by all sub-nodes. To grant it on the site root (site-wide effect), open the site root node in **jContent**, go to the **Edit roles** tab, and assign `allow-script-in-richtext` to the user or group.
 
 ## How it works
 
