@@ -11,7 +11,7 @@ window.jahia.uiExtender.registry.add('callback', 'richtext-ckeditor5-script-supp
             }
 
             // Prevent double registration if callback fires more than once
-            if (registry.get('ckeditor5-config', 'completeWithScripts')) {
+            if (registry.get('ckeditor5-config', 'complete-with-scripts')) {
                 return;
             }
 
@@ -20,7 +20,7 @@ window.jahia.uiExtender.registry.add('callback', 'richtext-ckeditor5-script-supp
             // Adding 'script' to htmlSupport.allow activates that built-in support.
             var existingAllow = (complete.htmlSupport && complete.htmlSupport.allow) || [];
 
-            registry.add('ckeditor5-config', 'completeWithScripts', Object.assign({}, complete, {
+            registry.add('ckeditor5-config', 'complete-with-scripts', Object.assign({}, complete, {
                 htmlSupport: Object.assign({}, complete.htmlSupport || {}, {
                     allow: existingAllow.concat([
                         {

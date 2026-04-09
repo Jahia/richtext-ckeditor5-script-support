@@ -69,12 +69,12 @@ In `digital-factory-data/karaf/etc/org.jahia.modules.richtextCKEditor5.yaml`:
 
 ```yaml
 configs:
-  - name: completeWithScripts
+  - name: complete-with-scripts
     permission: richtext-embed-scripts
   - name: complete
 ```
 
-The `permission` field is optional. When set, Jahia selects `completeWithScripts` only for users who hold that permission on the edited node — all others fall back to `complete`. Omit `permission` to activate `completeWithScripts` for everyone.
+The `permission` field is optional. When set, Jahia selects `complete-with-scripts` only for users who hold that permission on the edited node — all others fall back to `complete`. Omit `permission` to activate `complete-with-scripts` for everyone.
 
 Use `siteKeys` to scope activation to specific sites.
 
