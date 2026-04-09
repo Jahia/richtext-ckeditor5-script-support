@@ -79,7 +79,7 @@ The `permission` field is optional — omit it to give `complete-with-scripts` t
 
 ### 4. Grant the role to users or groups
 
-This module ships the edit role `allow-script-in-richtext` (a sub-role of `editor`). Assign it to the users or groups who should be allowed to embed scripts — they will automatically receive the `complete-with-scripts` config in the editor.
+This module ships the edit role `allow-script-in-richtext` (a sub-role of `editor`), with English and French translations — it appears as **"Allow to embed scripts in RichText"** in the Jahia admin. Assign it to the users or groups who should be allowed to embed scripts — they will automatically receive the `complete-with-scripts` config in the editor.
 
 Edit roles are granted on content nodes and inherited by all sub-nodes. To grant it on the site root (site-wide effect), open the site root node in **jContent**, go to the **Edit roles** tab, and assign `allow-script-in-richtext` to the user or group.
 
