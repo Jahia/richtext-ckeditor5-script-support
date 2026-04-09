@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<permissions xmlns:j="http://www.jahia.org/jahia/1.0"
+             xmlns:jcr="http://www.jcp.org/jcr/1.0"
+             jcr:primaryType="jnt:permission">
+    <wysiwyg-editor-toolbar jcr:primaryType="jnt:permission">
+        <canAddScriptInRichText jcr:primaryType="jnt:permission"/>
+    </wysiwyg-editor-toolbar>
+</permissions>
