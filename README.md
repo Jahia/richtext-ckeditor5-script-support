@@ -95,7 +95,13 @@ To create a dedicated role:
 4. Expand **Unsecure permissions** and enable **richtext-embed-scripts**
 5. Save
 
-Then assign this role to the users or groups who should be allowed to embed scripts.
+Then assign this role to the users or groups who should be allowed to embed scripts:
+
+1. Go to **Jahia Administration → Users and Roles → Users** (or **Groups**)
+2. Select the user or group (e.g. the editors group)
+3. Go to the **Roles** tab
+4. Click **+**, select the site scope, and assign the role created above
+5. Save — members of that group now inherit the role and will receive the `complete-with-scripts` config in the editor
 
 ## How it works
 
