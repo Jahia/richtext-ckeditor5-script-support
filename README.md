@@ -77,15 +77,25 @@ Jahia evaluates configs in order and picks the first one the current user is per
 
 The `permission` field is optional — omit it to give `complete-with-scripts` to all users. `siteKeys` can restrict activation to specific sites.
 
-### 4. Grant the permission
+### 4. Create a role and grant the permission
 
 The `richtext-embed-scripts` permission is defined by this module in `src/main/import/permissions.xml`. After deployment it is available in JCR under:
 
 ```
-/modules/richtext-ckeditor5-script-support/<version>/permissions/wysiwyg-editor-toolbar/richtext-embed-scripts
+/modules/richtext-ckeditor5-script-support/<version>/permissions/unsecure-permissions/richtext-embed-scripts
 ```
 
-Assign it to the appropriate role in **Jahia Administration → Users and Roles**.
+It is grouped under **Unsecure permissions** because embedding executable scripts in live content is a sensitive capability that should be granted deliberately.
+
+To create a dedicated role:
+
+1. Go to **Jahia Administration → Users and Roles → Roles and permissions**
+2. Under **Edit roles**, click **+** and name the role (e.g. `Can add scripts in richtext`)
+3. Open the role, go to the **Permissions** tab, click **Other permissions**
+4. Expand **Unsecure permissions** and enable **richtext-embed-scripts**
+5. Save
+
+Then assign this role to the users or groups who should be allowed to embed scripts.
 
 ## How it works
 

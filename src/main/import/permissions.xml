@@ -2,7 +2,7 @@
 <permissions xmlns:j="http://www.jahia.org/jahia/1.0"
              xmlns:jcr="http://www.jcp.org/jcr/1.0"
              jcr:primaryType="jnt:permission">
-    <wysiwyg-editor-toolbar jcr:primaryType="jnt:permission">
+    <unsecure-permissions jcr:primaryType="jnt:permission">
         <richtext-embed-scripts jcr:primaryType="jnt:permission"/>
-    </wysiwyg-editor-toolbar>
+    </unsecure-permissions>
 </permissions>
