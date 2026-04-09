@@ -10,7 +10,7 @@ The feature is permission-gated: only users with the `allow-script-in-richtext` 
 
 | Layer | What strips it | Fix |
 |---|---|---|
-| CKEditor 5 (client) | `DomConverter` replaces `<script>` with a `<span>` in the editing DOM; `domToView` does not expose inline script bodies as child nodes | Add `script` to `htmlSupport.allow` to activate the built-in `ScriptElementSupport` |
+| CKEditor 5 (client) | [`DomConverter`](https://github.com/ckeditor/ckeditor5/blob/master/packages/ckeditor5-engine/src/view/domconverter.ts) replaces `<script>` with a `<span data-ck-unsafe-element="script">` in the editing DOM; `domToView` does not expose inline script bodies as child nodes | Add `script` to `htmlSupport.allow` to activate the built-in [`ScriptElementSupport`](https://github.com/ckeditor/ckeditor5/blob/master/packages/ckeditor5-html-support/src/integrations/script.ts) |
 | Jahia `html-filtering` (server) | OWASP Java HTML Sanitizer strips `<script>` before the value is stored in JCR | Add `script` to the allowlist YAML |
 
 ## Installation
@@ -87,22 +87,27 @@ Edit roles are granted on content nodes and inherited by all sub-nodes. To grant
 
 ### Permission enforcement (client-side)
 
-The `complete` config ships with `htmlSupport.allow: [{ name: /.*/ }]`, a wildcard that inadvertently activates `ScriptElementSupport` for all users. Without a countermeasure, the YAML permission gate would have no real effect.
+The `complete` config ships with `htmlSupport.allow: [{ name: /.*/ }]`, a wildcard that inadvertently activates `ScriptElementSupport` for all users (see [GHS documentation](https://ckeditor.com/docs/ckeditor5/latest/features/html/general-html-support.html) — `disallow` takes precedence over `allow`). Without a countermeasure, the YAML permission gate would have no real effect.
 
 When this module loads it does two things:
 
-1. **Patches `complete`** — adds `htmlSupport.disallow: [{ name: 'script' }]` to the existing registry entry. In GHS, `disallow` takes precedence over `allow`, so script support is suppressed for all users of `complete`.
+1. **Patches `complete`** — adds `htmlSupport.disallow: [{ name: 'script' }]` to the existing registry entry, suppressing script support for all users of `complete`.
 2. **Creates `complete-with-scripts`** — built from the original `complete` (before the patch) with `{ name: 'script', attributes: true }` added to `htmlSupport.allow`. Script support is active only for this config.
 
 The YAML then selects the appropriate config per user based on the permission. The gate is **client-side only** — `html-filtering` (step 2) applies to all users equally and is required for scripts to survive save regardless of which config was used.
 
 ### CKEditor 5 internals
 
-`ScriptElementSupport` (a plugin inside `GeneralHtmlSupport`) handles the two CKEditor blocks:
+`DomConverter` blocks `<script>` at two levels (see [`domconverter.ts`](https://github.com/ckeditor/ckeditor5/blob/master/packages/ckeditor5-engine/src/view/domconverter.ts)):
 
-- **`registerRawContentMatcher({ name: 'script' })`** — instructs `DomConverter` to store the raw script body as a `$rawContent` custom property on the view element instead of trying to process it as child nodes (which yields nothing).
+- **Editing DOM** — `unsafeElements = ['script', 'style']` causes script elements to be replaced by `<span data-ck-unsafe-element="script">` to prevent execution while editing.
+- **Data loading** — `domToView` does not expose the text content of `<script>` elements as child nodes, so the inline body is invisible to the standard upcast API.
+
+Both are solved by [`ScriptElementSupport`](https://github.com/ckeditor/ckeditor5/blob/master/packages/ckeditor5-html-support/src/integrations/script.ts), a plugin inside `GeneralHtmlSupport` activated by adding `script` to `htmlSupport.allow`:
+
+- **[`registerRawContentMatcher({ name: 'script' })`](https://github.com/ckeditor/ckeditor5/blob/master/packages/ckeditor5-engine/src/view/domconverter.ts#L1295)** — instructs `DomConverter` to store the raw script body as a `$rawContent` custom property on the view element instead of trying to process it as child nodes (which yields nothing).
 - **Upcast** — reads `$rawContent` and stores it in the `htmlScript` model element's `htmlContent` attribute.
-- **Data downcast** — restores the original `<script>` tag and body via `createRawElement`, bypassing `DomConverter`'s security check.
+- **Data downcast** — restores the original `<script>` tag and body via `createRawElement`, which is rendered before `DomConverter`'s security check and therefore bypasses it.
 
 ### Server-side — Jahia html-filtering
 
