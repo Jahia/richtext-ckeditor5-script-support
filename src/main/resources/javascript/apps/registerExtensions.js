@@ -16,17 +16,29 @@ window.jahia.uiExtender.registry.add('callback', 'richtext-ckeditor5-script-supp
                 return;
             }
 
-            // ScriptElementSupport is a plugin that ships inside GeneralHtmlSupport,
-            // which is already loaded as part of the 'complete' config.
-            // Adding 'script' to htmlSupport.allow activates it: the plugin calls
-            // registerRawContentMatcher({ name: 'script' }) so that DomConverter stores
-            // the raw script body as a '$rawContent' custom property instead of trying
-            // to process it as child nodes (which would yield nothing). The upcast then
-            // reads that property into the 'htmlScript' model element, and the data
-            // downcast restores the original <script> tag via createRawElement, bypassing
-            // DomConverter's security check.
             var existingAllow = (complete.htmlSupport && complete.htmlSupport.allow) || [];
+            var existingDisallow = (complete.htmlSupport && complete.htmlSupport.disallow) || [];
 
+            // Patch 'complete' to disallow <script>.
+            // The wildcard { name: /.*/ } in htmlSupport.allow would otherwise activate
+            // ScriptElementSupport for all users, bypassing the permission gate entirely.
+            // In GHS, disallow takes precedence over allow.
+            registry.addOrReplace('ckeditor5-config', 'complete', Object.assign({}, complete, {
+                htmlSupport: Object.assign({}, complete.htmlSupport || {}, {
+                    disallow: existingDisallow.concat([
+                        { name: 'script' }
+                    ])
+                })
+            }));
+
+            // Create 'complete-with-scripts' from the original complete config (before the
+            // disallow patch above) so that <script> is explicitly allowed for users who
+            // hold the richtext-embed-scripts permission.
+            // ScriptElementSupport (built into GeneralHtmlSupport) handles the actual
+            // preservation: registerRawContentMatcher stores the raw body as $rawContent,
+            // the upcast reads it into the htmlScript model element, and the data downcast
+            // restores the <script> tag via createRawElement, bypassing DomConverter's
+            // security check.
             registry.add('ckeditor5-config', 'complete-with-scripts', Object.assign({}, complete, {
                 htmlSupport: Object.assign({}, complete.htmlSupport || {}, {
                     allow: existingAllow.concat([

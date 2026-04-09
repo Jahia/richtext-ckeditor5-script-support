@@ -81,6 +81,14 @@ Assign it to the appropriate role in **Jahia Administration → Users and Roles*
 
 ## How it works
 
+### Permission enforcement
+
+The `complete` config ships with `htmlSupport.allow: [{ name: /.*/ }]`, a wildcard that inadvertently activates `ScriptElementSupport` for all users. Without a countermeasure, the permission gate in the YAML would have no effect client-side.
+
+When this module loads, it patches the `complete` config in the Jahia registry to add `htmlSupport.disallow: [{ name: 'script' }]`. In GHS, `disallow` takes precedence over `allow`, so script support is suppressed for all users of `complete`. The `complete-with-scripts` config is built from the original `complete` (before the patch) and explicitly re-allows `<script>`.
+
+Note: this is a client-side gate only. The `html-filtering` YAML (step 2) must still be configured — it is the server-side gate that prevents scripts from being stored in JCR regardless of how the richtext field was edited.
+
 ### Client-side — CKEditor 5
 
 CKEditor 5 blocks `<script>` at two levels inside `DomConverter`:
